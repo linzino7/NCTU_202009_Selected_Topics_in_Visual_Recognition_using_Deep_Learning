@@ -1,7 +1,6 @@
 # -*- coding: utf-8 -*-
 """
 Created on Sat Oct 31 00:32:28 2020
-
 @author: ASUS
 """
 
@@ -9,9 +8,11 @@ import torch
 import torch.nn as nn
 import torch.nn.functional as F
 from torch.utils.data import Dataset
+import torchvision.transforms as transforms
 import torchvision
 from torchvision.models import resnet18, resnet50
-import torchvision.transforms as transforms
+import torch.optim as optim
+
 
 from PIL import Image
 import glob
@@ -26,8 +27,10 @@ print('staring clocking')
 def is_image_file(filename):
     return any(filename.endswith(extension) for extension in [".png", ".jpg", ".jpeg"])
 
+
 def get_img_fileid(filename, idx=8):
-    return  re.split('/|\.',filename)[idx]
+    return re.split('/|\.', filename)[idx]
+
 
 class CarDataset(Dataset):
     def __init__(self, image_dir, label_path, transform=None, is_train=False):
@@ -63,12 +66,11 @@ class CarDataset(Dataset):
                 self.image_filenames.append(file)
                 id_num = int(get_img_fileid(file))
                 # Search label by id 
-                class_name = self.label_pairs[self.label_pairs['id']==id_num]['label'].iloc[0]
+                class_name = self.label_pairs[self.label_pairs['id'] == id_num]['label'].iloc[0]
                 if class_name in self.num_per_classes:
                     self.num_per_classes[class_name] += 1
                 else:
                     self.num_per_classes[class_name] = 1
-
 
     def __getitem__(self, index):
         input_file = self.image_filenames[index]
@@ -78,19 +80,17 @@ class CarDataset(Dataset):
             try:
                 input = self.transform(input)
             except Exception as err:
-                print(input_file,input.mode)
+                print(input_file, input.mode)
                 print(err)
                 raise Exception()
             
         id_num = int(get_img_fileid(input_file))
-        label = self.label_pairs[self.label_pairs['id']==id_num]['label'].iloc[0]
+        label = self.label_pairs[self.label_pairs['id'] == id_num]['label'].iloc[0]
         return input, label
 
-    
     def __len__(self):
         return len(self.image_filenames)
 
-    
     def show_details(self):
         for key in sorted(self.num_per_classes.keys()):
             print("{:<8}|{:<12}".format(
@@ -118,7 +118,6 @@ class CarTestDataset(Dataset):
             if is_image_file(file):
                 self.image_filenames.append(file)
 
-
     def __getitem__(self, index):
         input_file = self.image_filenames[index]
         input = Image.open(input_file)
@@ -127,7 +126,7 @@ class CarTestDataset(Dataset):
             try:
                 input = self.transform(input)
             except Exception as err:
-                print(input_file,input.mode)
+                print(input_file, input.mode)
                 print(err)
                 raise Exception()
             
@@ -136,7 +135,6 @@ class CarTestDataset(Dataset):
     def __len__(self):
         return len(self.image_filenames)
 
-    
     def get_files(self):
         return self.image_filenames
     
@@ -153,20 +151,18 @@ labelcsv_filepath = '/home/0856169/cv/hw01/data/training_labels.csv'
 ''' Using torchvision, it’s extremely easy to load CIFAR10.'''
 
 transform = transforms.Compose(
-    [#transforms.CenterCrop(10),
-     transforms.RandomRotation(30),
+    [transforms.RandomRotation(30),
      transforms.RandomHorizontalFlip(p=0.5),
      transforms.RandomVerticalFlip(p=0.5),
-     transforms.Resize((224,224)),
+     transforms.Resize((224, 224)),
      transforms.ToTensor(),
      transforms.Normalize(mean=[0.485, 0.456, 0.406],
                           std=[0.229, 0.224, 0.225])])
-     #transforms.Normalize((0.5, 0.5, 0.5),(0.5, 0.5, 0.5))])
 
 transform_test = transforms.Compose(
-    [transforms.Resize((224,224)),
+    [transforms.Resize((224, 224)),
      transforms.ToTensor(),
-     transforms.Normalize((0.5, 0.5, 0.5),(0.5, 0.5, 0.5))])
+     transforms.Normalize((0.5, 0.5, 0.5), (0.5, 0.5, 0.5))])
 
 trainset = CarDataset(image_dir=train_datapath, label_path=labelcsv_filepath, 
                       is_train=True, transform=transform)
@@ -191,30 +187,23 @@ for clas in classes:
     classes_nTc[c] = clas
     c = c + 1 
 
+
 def class_to_num(labels):
     num = []
     for l in labels:
         num.append(classes_cTn[l])
     return num
 
-
-
 '''Define a Convolutional Neural Network'''
-        
-#net = resnet18(pretrained = True)
-# net.fc = nn.Linear(512,196)
-# net = net.to(device)
-
 net = resnet50(pretrained=True)
-net.fc = nn.Linear(2048,196)
+net.fc = nn.Linear(2048, 196)
 net = net.to(device)
 
 ''' Define a Loss function and optimizer'''
-import torch.optim as optim
 # Let’s use a Classification Cross-Entropy loss and SGD with momentum.
 criterion = nn.CrossEntropyLoss()
 optimizer = optim.SGD(net.parameters(), lr=0.005, momentum=0.9)
-#optimizer = optim.Adam(net.parameters(), lr=0.001)
+
 
 # step learning rate
 scheduler = optim.lr_scheduler.StepLR(optimizer, step_size=30, gamma=0.1)
@@ -222,9 +211,6 @@ scheduler = optim.lr_scheduler.StepLR(optimizer, step_size=30, gamma=0.1)
 #  calculate program run time
 
 print('Start Training!')
-
-
-
 
 '''Train the network'''
 
@@ -234,7 +220,7 @@ for epoch in range(100):  # loop over the dataset multiple times
         
         # get the inputs; data is a list of [inputs, labels]
         labels = torch.Tensor(class_to_num(labels))
-        labels = labels.long() # change dtype
+        labels = labels.long()
         inputs, labels = inputs.to(device), labels.to(device)
 
         # zero the parameter gradients
@@ -260,7 +246,6 @@ for epoch in range(100):  # loop over the dataset multiple times
     print('Epoch-{0} lr: {1}'.format(epoch, optimizer.param_groups[0]['lr']))
                 
             
-
 print('Finished Training')
 stop = timeit.default_timer()
 print('Training Time: ', stop - start, ' sec')  
@@ -270,23 +255,12 @@ print('Training Time: ', stop - start, ' sec')
 PATH = '/home/0856169/cv/hw01/model_restnet50_100_16_0.005_sgd_all_nor_slr.pt'
 torch.save(net.state_dict(), PATH)
 
-# PATH = '/home/0856169/cv/hw01/model_GPU_restnet.pt'
-
-# net = resnet18()
-# net.fc = nn.Linear(512,196)
-# net.load_state_dict(torch.load(PATH))
-# net = net.to(device)
-#net.eval()
-
-
-
 '''testing data'''
 
 test_datapath = '/home/0856169/cv/hw01/data/testing_data/testing_data'
 testset = CarTestDataset(image_dir=test_datapath, transform=transform_test)
 
-testloader = torch.utils.data.DataLoader(testset, batch_size=32,
-                                          shuffle=False)#, num_workers=4)
+testloader = torch.utils.data.DataLoader(testset, batch_size=32, shuffle=False)
 
 print('Starting testing data !')
 lable_n = []
@@ -298,17 +272,16 @@ with torch.no_grad():
         _, predicted = torch.max(outputs.data, 1)
         
         predicted_Labels = predicted.to('cpu').tolist()
-        lable_n = lable_n +predicted_Labels
+        lable_n = lable_n + predicted_Labels
 
 # aggraget data
-files =  [get_img_fileid(f) for f in testset.image_filenames]
-label_t = [ classes_nTc[f] for f in lable_n]
+files = [get_img_fileid(f) for f in testset.image_filenames]
+label_t = [classes_nTc[f] for f in lable_n]
 
 gr_id = ['003712', '013394', '001270', '006398', '001311', '003543', '001458',
          '008015', '001412', '001302', '001390']
 gr_label_t = [label_t[0]]*11
 
    
-df = pd.DataFrame({'id':files+gr_id,'label':label_t+gr_label_t})
+df = pd.DataFrame({'id': files+gr_id, 'label': label_t+gr_label_t})
 df.to_csv('model_hw01_restnet50_100_16_0.005_sgd_all_nor_slr.csv', index=False)
-
