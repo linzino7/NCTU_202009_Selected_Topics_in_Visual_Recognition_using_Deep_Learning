@@ -1,9 +1,7 @@
 # HW1: Image Classification
-Code for 3rd place solution in Kaggle Human Protein Atlas Image Classification Challenge.
 
 
 ## Hardware
-The following specs were used to create the original solution.
 - Ubuntu 18.04 LTS
 - Intel(R) Xeon(R) CPU E5-2696 v4 @ 2.20GHz
 - 62.9G RAM
@@ -21,8 +19,6 @@ To reproduct my submission without retrainig, do the following steps:
 ## Installation
 All requirements should be detailed in requirements.txt. Using Anaconda is strongly recommended.
 ```
-conda create -n hpa python=3.6
-source activate hpa
 pip install -r requirements.txt
 ```
 
@@ -34,24 +30,20 @@ If you generate CSV files (duplicate image list, split, leak.. ), original files
 After downloading and converting images, the data directory is structured as:
 ```
 data
-  +- raw
-  |  +- train
-  |  +- test
-  |  +- external
-  +- rgby
-  |  +- train
-  |  +- test
-  |  +- external
+  +- training_data
+  |  +- training_data
+  +- testing_data
+  |  +- testing_data
+  +- training_labels.csv
 ```
+
 #### Download Official Image
-Download and extract *train.zip* and *test.zip* to *data/raw* directory.
+Download and extract *cs-t0828-2020-hw1.zi* to *dataw* directory.
 If the Kaggle API is installed, run following command.
 ```
-$ kaggle competitions download -c human-protein-atlas-image-classification -f train.zip
-$ kaggle competitions download -c human-protein-atlas-image-classification -f test.zip
-$ mkdir -p data/raw
-$ unzip train.zip -d data/raw/train
-$ unzip test.zip -d data/raw/test
+$ kaggle competitions download -c cs-t0828-2020-hw1
+$ mkdir data
+$ unzip cs-t0828-2020-hw1.zip -d data
 ```
 
 #### Download External Images
