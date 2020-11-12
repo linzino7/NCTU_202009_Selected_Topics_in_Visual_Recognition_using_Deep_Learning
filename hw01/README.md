@@ -46,42 +46,7 @@ $ mkdir data
 $ unzip cs-t0828-2020-hw1.zip -d data
 ```
 
-#### Download External Images
-To download external images, run following command. The external images will be located in *data/raw/external*
-```
-$ python tools/download.py
-```
-
-#### Make RGBY Images
-To train or inference, converting to RGBY image is required. Run following commands.
-
-For official:
-```
-$ python tools/make_rgby.py --input_dir=data/raw/train --output_dir=data/rgby/train
-$ python tools/make_rgby.py --input_dir=data/raw/test --output_dir=data/rgby/test
-```
-For external:
-```
-$ python tools/make_rgby.py --input_dir=data/raw/external --output_dir=data/rgby/external
-```
-
-### Generate CSV files
-*You can skip this step. All CSV files are prepared in data directory.*
-
-#### Duplicated Image List
-There are duplicated images. To search them, run following commands. *duplicates.ahash.csv* and *duplicates.phash.csv* will be generated.
-```
-$ python tools/find_duplicate_images.py
-```
-
-#### Split Dataset
-Create 5 folds CV set. One for training, the other for searching augmentation. *split.stratified.[0-4].csv* and *split.stratified.small.[0-4].csv* will be generated.
-```
-$ python stratified_split.py
-$ python stratified_split.py --use_external=0
-```
-
-#### Search Data Leak
+#### remove gray image
 To learn more about data leak, please, refer to [this post](https://www.kaggle.com/c/human-protein-atlas-image-classification/discussion/72534). Following comand will create *data_leak.ahash.csv* and *data_leak.phash.csv*. [The other leak](https://www.kaggle.com/c/human-protein-atlas-image-classification/discussion/73395y) is already in *data* directory.
 ```
 $ python find_data_leak.py
