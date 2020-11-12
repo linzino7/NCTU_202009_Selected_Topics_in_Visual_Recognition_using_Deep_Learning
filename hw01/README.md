@@ -1,13 +1,13 @@
-# kaggle-hpa-image-classification
+# HW1: Image Classification
 Code for 3rd place solution in Kaggle Human Protein Atlas Image Classification Challenge.
 
-To read the detailed solution, please, refer to [the Kaggle post](https://www.kaggle.com/c/human-protein-atlas-image-classification/discussion/77320)
 
 ## Hardware
 The following specs were used to create the original solution.
-- Ubuntu 16.04 LTS
-- Intel(R) Core(TM) i7-8700 CPU @ 3.20GHz
-- 3x NVIDIA TitanX 
+- Ubuntu 18.04 LTS
+- Intel(R) Xeon(R) CPU E5-2696 v4 @ 2.20GHz
+- 62.9G RAM
+- NVIDIA T4
 
 ## Reproducing Submission
 To reproduct my submission without retrainig, do the following steps:
