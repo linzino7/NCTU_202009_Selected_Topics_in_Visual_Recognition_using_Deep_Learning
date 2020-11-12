@@ -145,7 +145,6 @@ print(device)
 
 
 train_datapath = '/home/0856169/cv/hw01/data/training_data/training_data'
-vali_datapath = '/home/0856169/cv/hw01/data/validation_data/validation_data'
 labelcsv_filepath = '/home/0856169/cv/hw01/data/training_labels.csv'
 
 ''' Using torchvision, it’s extremely easy to load CIFAR10.'''
@@ -169,12 +168,6 @@ trainset = CarDataset(image_dir=train_datapath, label_path=labelcsv_filepath,
 # pin_memory=True
 trainloader = torch.utils.data.DataLoader(trainset, batch_size=16,
                                           shuffle=True, num_workers=2)
-
-# valiset = CarDataset(image_dir=vali_datapath, label_path=labelcsv_filepath,
-#                       is_train=True, transform=transform_test)
-
-# valiloader = torch.utils.data.DataLoader(valiset, batch_size=32,
-#                                           shuffle=False)#, num_workers=4)
 
 print('Finish leadeing data')
 classes = trainset.get_class()
