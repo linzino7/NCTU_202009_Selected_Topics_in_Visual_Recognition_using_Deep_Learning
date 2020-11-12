@@ -44,24 +44,8 @@ $ mkdir data
 $ unzip cs-t0828-2020-hw1.zip -d data
 ```
 
-#### remove gray image
-To learn more about data leak, please, refer to [this post](https://www.kaggle.com/c/human-protein-atlas-image-classification/discussion/72534). Following comand will create *data_leak.ahash.csv* and *data_leak.phash.csv*. [The other leak](https://www.kaggle.com/c/human-protein-atlas-image-classification/discussion/73395y) is already in *data* directory.
-```
-$ python find_data_leak.py
-```
 
-## Training
-In configs directory, you can find configurations I used train my final models. My final submission is ensemble of resnet34 x 5, inception-v3 and se-resnext50, but ensemble of inception-v3 and se-resnext50's performance is better.
-
-### Search augmentation
-To find suitable augmentation, 256x256 image and resnet18 are used.
-It takes about 2 days on TitanX. The result(best_policy.data) will be located in *results/search* directory.
-The policy that I used is located in *data* directory.
-```
-$ python train.py --config=configs/search.yml
-```
-
-### Train models
+##  Train models
 To train models, run following commands.
 ```
 $ python hw01.py 
